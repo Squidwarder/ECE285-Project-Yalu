@@ -146,7 +146,7 @@ def main():
         [
 
             psg.Column([
-                [psg.Text("OpenCV Webcam footage", size=(60, 1), justification="center")],
+                [psg.Text("Cam footage", size=(60, 1), justification="center")],
 
                 [psg.Image(filename="", key="-IMAGE-", size=(300,300))],
 
