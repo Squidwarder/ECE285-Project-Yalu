@@ -34,19 +34,17 @@ while True:
         break
 
     # Apply the sharpening kernel to the frame using the filter2D function
-    # sharpened = cv2.filter2D(frame, -1, kernel)
-
-    dnn_sharpen = sr.upsample(frame)
+    sharpened = cv2.filter2D(frame, -1, kernel)    
     
     # cv2.imshow('Original window', frame)
     # Display the sharpened frame
-    # cv2.imshow('Sharpened window', sharpened)
-    
-    cv2.imshow("DNN sharpened", dnn_sharpen)
+    cv2.imshow('Sharpened window', sharpened)        
     
 
     # Break the loop on 'q' key press
     if cv2.waitKey(1) & 0xFF == ord('q') or cv2.getWindowProperty('Sharpened window', cv2.WND_PROP_VISIBLE) < 1:
+        dnn_sharpen = sr.upsample(frame)
+        cv2.imshow("DNN sharpened", dnn_sharpen)
         break
 
 # When everything done, release the capture and destroy the window
