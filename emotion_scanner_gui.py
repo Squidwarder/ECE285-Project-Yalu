@@ -12,6 +12,7 @@ import PIL
 import base64
 import io
 
+#! Default model
 model = YOLO("C:/Users/yaluo/Desktop/Emotion Scanner/train40_gpu.pt")
 
 path = 'C:/Users/yaluo/Desktop/Emotion Scanner/saved_img'
@@ -64,6 +65,13 @@ def convert_to_bytes(file_or_bytes, resize=None):
 
 
 def capture_window(frame):
+    """This window is dedicated to capturing snapshots from camera devices.
+    
+    Has the ability to save those snapshots as actual image files for processing.
+
+    Args:
+        frame (_type_): _description_
+    """
     capture_layout = [
         # [sg.Text("Captured Snapshot", size=(60, 1), justification="center")],
         
