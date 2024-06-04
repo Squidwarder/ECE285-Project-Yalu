@@ -1,6 +1,20 @@
 import cv2
 import numpy as np
 
+"""
+
+Initially tried to stabilize footage, but optical flow weren't tracking at all. The result was abysmal.
+    
+Feature detection: Detect good features to track in the video. You can use functions like cv2.goodFeaturesToTrack() for this1.
+Optical flow: Track the detected features in the video using optical flow. You can use functions like cv2.calcOpticalFlowPyrLK() for this1.
+Transformation matrix: Estimate the transformation (e.g., translation, rotation) between frames using the tracked features. 
+You can use functions like cv2.estimateAffinePartial2D() or cv2.findHomography() for this1.
+Warp frames: Apply the inverse of the estimated transformation to the frames to align them and thus stabilize the video. 
+You can use functions like cv2.warpAffine() for this1.
+    
+"""
+
+
 # The video feed is read in as a VideoCapture object
 cap = cv2.VideoCapture(1)
 
@@ -34,6 +48,7 @@ while True:
         break
 
     # Apply the sharpening kernel to the frame using the filter2D function
+    # same depth as source
     sharpened = cv2.filter2D(frame, -1, kernel)    
     
     # cv2.imshow('Original window', frame)

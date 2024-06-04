@@ -4,7 +4,8 @@
 #? Documentation for PySimpleGUI: https://www.pysimplegui.org/en/latest/cookbook/#recipe-theme-browser
 
 from ultralytics import YOLO
-import PySimpleGUI as sg
+# reminds me of the football club
+import PySimpleGUI as psg
 import cv2
 import numpy as np
 import os
@@ -18,19 +19,19 @@ model = YOLO("C:/Users/yaluo/Desktop/Emotion Scanner/train40_gpu.pt")
 path = 'C:/Users/yaluo/Desktop/Emotion Scanner/saved_img'
 
 local_img_column = [
-    [sg.Text("File selection", size=(60, 1), justification="center")],
+    [psg.Text("File selection", size=(60, 1), justification="center")],
     
     [
-        sg.Text("Image File"),
-        sg.In(size=(25, 2), enable_events=True, key="-FILE-"),
-        sg.FileBrowse(),
+        psg.Text("Image File"),
+        psg.In(size=(25, 2), enable_events=True, key="-FILE-"),
+        psg.FileBrowse(),
     ],    
     
-    [sg.Text(size=(60, 1), key="-IMAGE NAME-")],
+    [psg.Text(size=(60, 1), key="-IMAGE NAME-")],
 
-    [sg.Image(key="-LOCAL IMAGE-", size=(300,300))],
+    [psg.Image(key="-LOCAL IMAGE-", size=(300,300))],
     
-    [sg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
+    [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
 ]
 
 def convert_to_bytes(file_or_bytes, resize=None):
@@ -73,20 +74,20 @@ def capture_window(frame):
         frame (_type_): _description_
     """
     capture_layout = [
-        # [sg.Text("Captured Snapshot", size=(60, 1), justification="center")],
+        # [psg.Text("Captured Snapshot", size=(60, 1), justification="center")],
         
-        [sg.Image(filename="", key="-Snapshot-", size=(300,300))],
+        [psg.Image(filename="", key="-Snapshot-", size=(300,300))],
         
-        [sg.InputText()],
+        [psg.InputText()],
         
-        [sg.Button("Save Image", size=(15, 2))],
+        [psg.Button("Save Image", size=(15, 2))],
         
-        [sg.Button("Process", size=(15, 2))],
+        [psg.Button("Process", size=(15, 2))],
         
-        [sg.Button("Back to Main Page", size=(15, 2))],
+        [psg.Button("Back to Main Page", size=(15, 2))],
     ]
     
-    capture_window = sg.Window("Snapshot", capture_layout, modal=True) #location=(600, 100), 
+    capture_window = psg.Window("Snapshot", capture_layout, modal=True) #location=(600, 100), 
     
     imgbytes = cv2.imencode(".png", frame)[1].tobytes()
     
@@ -94,7 +95,7 @@ def capture_window(frame):
 
         event, values = capture_window.read(timeout=20)        
                 
-        if event == "Back to Main Page" or event == sg.WIN_CLOSED:
+        if event == "Back to Main Page" or event == psg.WIN_CLOSED:
 
             break
         
@@ -103,7 +104,7 @@ def capture_window(frame):
         if event == "Save Image":
             
             if not values[0]:
-                sg.popup("Enter a valid name")
+                psg.popup("Enter a valid name")
                 continue
             
             #! Tkinter and PySimpleGUI wants to work with .png and .gif by default
@@ -114,7 +115,7 @@ def capture_window(frame):
             
             cv2.imwrite(os.path.join(path , img_name), frame)
             print(os.path.join(path, img_name))
-            sg.popup("Image saved")
+            psg.popup("Image saved")
             
                                 
         if event == "Process":
@@ -126,7 +127,7 @@ def capture_window(frame):
                 im_array = r.plot()
                 message = r.verbose()                     
                 cv2.imshow("The boxed result", im_array)
-                sg.popup(message)
+                psg.popup(message)
                 # print(r)                     
                 cv2.waitKey(0)
                                                         
@@ -135,7 +136,7 @@ def capture_window(frame):
 
 def main():
 
-    sg.theme("DarkBlue")
+    psg.theme("DarkBlue")
 
 
     # Define the window layout
@@ -144,19 +145,19 @@ def main():
         [
         [
 
-            sg.Column([
-                [sg.Text("OpenCV Webcam footage", size=(60, 1), justification="center")],
+            psg.Column([
+                [psg.Text("OpenCV Webcam footage", size=(60, 1), justification="center")],
 
-                [sg.Image(filename="", key="-IMAGE-", size=(300,300))],
+                [psg.Image(filename="", key="-IMAGE-", size=(300,300))],
 
-                [sg.Button("Capture", size=(10, 2))],
+                [psg.Button("Capture", size=(10, 2))],
 
-                [sg.Button("Exit", size=(10, 2))],
+                [psg.Button("Exit", size=(10, 2))],
             ]),
         
-            sg.VSeparator(),
+            psg.VSeparator(),
 
-            sg.Column(local_img_column)
+            psg.Column(local_img_column)
         ]            
             
         ]
@@ -164,22 +165,30 @@ def main():
     
     # Create the window and show it without the plot
 
-    window = sg.Window("OpenCV Integration", layout) #, location=(800, 200)
+    window = psg.Window("Inventory Footage", layout) #, location=(800, 200)
 
-    cap = cv2.VideoCapture(1) #! 0 is internal webcam, 1 works for usb cam
+    #! 0 is internal webcam, 1 works for usb cam
+    # usb cam takes longer than internal cam
+    cap = cv2.VideoCapture(1)
     
     while True:
 
         event, values = window.read(timeout=20)
 
-        if event == "Exit" or event == sg.WIN_CLOSED:
+        if event == "Exit" or event == psg.WIN_CLOSED:
 
             break
 
         ret, frame_raw = cap.read()
+        
+        if not ret:
+            print("frame isn't available")
+            break
 
         #! flips the frame so that it matches movement in front of webcam
-        frame = cv2.flip(frame_raw, 1)
+        # not needed if using external camera
+        # frame = cv2.flip(frame_raw, 1)
+        frame = frame_raw
 
         #* Resizing the camera feed to make it look better on the layout
         #* original size is 640 x 480
@@ -225,7 +234,7 @@ def main():
                 im_array = r.plot()
                 message = r.verbose()                     
                 cv2.imshow("The boxed result", im_array)
-                sg.popup(message)
+                psg.popup(message)
                 # print(r)                     
                 cv2.waitKey(0)
 
@@ -233,15 +242,3 @@ def main():
 
 
 main()
-
-"""
-@software{yolov8_ultralytics,
-  author = {Glenn Jocher and Ayush Chaurasia and Jing Qiu},
-  title = {Ultralytics YOLOv8},
-  version = {8.0.0},
-  year = {2023},
-  url = {https://github.com/ultralytics/ultralytics},
-  orcid = {0000-0001-5950-6979, 0000-0002-7603-6750, 0000-0003-3783-7069},
-  license = {AGPL-3.0}
-}
-"""
