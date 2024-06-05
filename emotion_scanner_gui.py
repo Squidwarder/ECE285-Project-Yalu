@@ -27,11 +27,9 @@ local_img_column = [
         psg.FileBrowse(),
     ],    
     
-    [psg.Text(size=(60, 1), key="-IMAGE NAME-")],
+    [psg.Text(size=(60, 1), key="-MODEL NAME-")],
 
-    [psg.Image(key="-LOCAL IMAGE-", size=(300,300))],
-    
-    [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
+    [psg.Image(key="-LOCAL IMAGE-", size=(300,300))]    
 ]
 
 def convert_to_bytes(file_or_bytes, resize=None):
@@ -168,8 +166,9 @@ def main():
     window = psg.Window("Inventory Footage", layout) #, location=(800, 200)
 
     #! 0 is internal webcam, 1 works for usb cam
+    #! usb cam is 1280x720 (16:9), webcam is 4:3.
     # usb cam takes longer than internal cam
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     
     while True:
 
@@ -210,33 +209,12 @@ def main():
             
             try:                    
             
-                window["-IMAGE NAME-"].update(chosen_file)
+                window["-MODEL NAME-"].update(chosen_file)
                 # window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (400,400))) #576,432
                 window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (576,432)))
-                window["-LOCAL PROCESS-"].update(disabled=False)
-            except:
-                pass                
-            
-        elif event == "-LOCAL PROCESS-":
-            print(values)
-            local_process_name = values["-FILE-"]
-            
-            # print(local_process_name)
-            # print("Stuck at this step:")
-            # print("-------------------")
-            # print("-------------------")
-            # print("-------------------")
-                        
-            processed_results = model(local_process_name)
-            
-            
-            for r in processed_results:
-                im_array = r.plot()
-                message = r.verbose()                     
-                cv2.imshow("The boxed result", im_array)
-                psg.popup(message)
-                # print(r)                     
-                cv2.waitKey(0)
+            except Exception as e:
+                psg.popup(e)
+                pass
 
     window.close()
 
