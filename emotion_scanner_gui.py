@@ -1,9 +1,6 @@
-# Code from https://realpython.com/pysimplegui-python/
-# Modified by Yalu Ouyang
-
 #? Documentation for PySimpleGUI: https://www.pysimplegui.org/en/latest/cookbook/#recipe-theme-browser
 
-from ultralytics import YOLO
+from ultralytics import YOLO, solutions
 # reminds me of the football club
 import PySimpleGUI as psg
 import cv2
@@ -172,6 +169,21 @@ def main():
     # usb cam takes longer than internal cam
     cap = cv2.VideoCapture(0)
     
+    w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
+
+    # Define line points (w, h)
+    line_points = [(20, 400), (500, 400)]
+
+    # Init Object Counter
+    counter = solutions.ObjectCounter(
+        view_img=True,
+        reg_pts=line_points,
+        classes_names=model.names,
+        draw_tracks=True,
+        line_thickness=2,
+    )
+
+    
     while True:
 
         event, values = window.read(timeout=20)
@@ -188,13 +200,19 @@ def main():
 
         #! flips the frame so that it matches movement in front of webcam
         # not needed if using external camera
-        # frame = cv2.flip(frame_raw, 1)
-        frame = frame_raw
+        frame = cv2.flip(frame_raw, 1)
+        # frame = frame_raw
 
         #* Resizing the camera feed to make it look better on the layout
         #* original size is 640 x 480
-        frame = cv2.resize(frame, (576,432))
-        imgbytes = cv2.imencode(".png", frame)[1].tobytes()
+        frame = cv2.resize(frame, (600,450))
+        
+        tracks = model.track(frame, persist=True, show=False)
+        tracked_im = tracks[0].plot()
+        # frame = counter.start_counting(frame, tracks)
+        
+        imgbytes = cv2.imencode(".png", tracked_im)[1].tobytes()
+        # imgbytes = cv2.imencode(".png", frame)[1].tobytes()
 
         window["-IMAGE-"].update(data=imgbytes)
         
