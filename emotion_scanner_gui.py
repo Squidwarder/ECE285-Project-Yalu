@@ -15,6 +15,8 @@ model = YOLO("C:/Users/yaluo/Desktop/Emotion Scanner/train40_gpu.pt")
 
 path = 'C:/Users/yaluo/Desktop/Emotion Scanner/saved_img'
 
+CAM_DEVICE = 0
+
 local_img_column = [
     [psg.Text("File selection", size=(60, 1), justification="center")],
     
@@ -81,7 +83,7 @@ def capture_window(frame):
         
         [psg.Button("Process", size=(15, 2))],
         
-        [psg.Button("Back to Main Page", size=(15, 2))],
+        [psg.Button("Back to Scan", size=(15, 2))],
     ]
     
     capture_window = psg.Window("Snapshot", capture_layout, modal=True) #location=(600, 100), 
@@ -92,7 +94,7 @@ def capture_window(frame):
 
         event, values = capture_window.read(timeout=20)        
                 
-        if event == "Back to Main Page" or event == psg.WIN_CLOSED:
+        if event == "Back to Scan" or event == psg.WIN_CLOSED:
 
             break
         
@@ -131,33 +133,20 @@ def capture_window(frame):
     capture_window.close()
 
 
-def main():
-
-    psg.theme("DarkBlue")
-
+def scan_window():
 
     # Define the window layout
 
     layout = [
-        [
-        [
-
-            psg.Column([
+        psg.Column([
                 [psg.Text("Cam footage", size=(60, 1), justification="center")],
 
-                [psg.Image(filename="", key="-IMAGE-", size=(300,300))],
+                [psg.Image(filename="", key="-SCAN IMAGE-", size=(300,300))],
 
                 [psg.Button("Capture", size=(10, 2))],
 
-                [psg.Button("Exit", size=(10, 2))],
-            ]),
-        
-            psg.VSeparator(),
-
-            psg.Column(local_img_column)
-        ]            
-            
-        ]
+                [psg.Button("Back to Main Page", size=(10, 2))],
+        ])
     ]
     
     # Create the window and show it without the plot
@@ -167,7 +156,7 @@ def main():
     #! 0 is internal webcam, 1 works for usb cam
     #! usb cam is 1280x720 (16:9), webcam is 4:3.
     # usb cam takes longer than internal cam
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(CAM_DEVICE)
     
     w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
@@ -188,7 +177,7 @@ def main():
 
         event, values = window.read(timeout=20)
 
-        if event == "Exit" or event == psg.WIN_CLOSED:
+        if event == "Back to Main Page" or event == psg.WIN_CLOSED:
 
             break
 
@@ -213,6 +202,77 @@ def main():
         
         imgbytes = cv2.imencode(".png", tracked_im)[1].tobytes()
         # imgbytes = cv2.imencode(".png", frame)[1].tobytes()
+
+        window["-SCAN IMAGE-"].update(data=imgbytes)
+        
+        if event == "Capture":
+                                
+            capture_window(frame)
+            
+
+    window.close()
+
+
+def main():
+
+    psg.theme("DarkBlue")
+
+
+    # Define the window layout
+
+    layout = [
+        [
+
+            psg.Column([
+                [psg.Text("Cam footage", size=(60, 1), justification="center")],
+
+                [psg.Image(filename="", key="-IMAGE-", size=(300,300))],
+
+                [psg.Button("Capture", size=(10, 2))],
+
+                [psg.Button("Exit", size=(10, 2))],
+            ]),
+        
+            psg.VSeparator(),
+
+            psg.Column(local_img_column)
+        ]            
+
+    ]
+    
+    # Create the window and show it without the plot
+
+    window = psg.Window("Inventory Footage", layout) #, location=(800, 200)
+
+    #! 0 is internal webcam, 1 works for usb cam
+    #! usb cam is 1280x720 (16:9), webcam is 4:3.
+    # usb cam takes longer than internal cam
+    cap = cv2.VideoCapture(0)
+    
+    while True:
+
+        event, values = window.read(timeout=20)
+
+        if event == "Exit" or event == psg.WIN_CLOSED:
+
+            break
+
+        ret, frame_raw = cap.read()
+        
+        if not ret:
+            print("frame isn't available")
+            break
+
+        #! flips the frame so that it matches movement in front of webcam
+        # not needed if using external camera
+        frame = cv2.flip(frame_raw, 1)
+        # frame = frame_raw
+
+        #* Resizing the camera feed to make it look better on the layout
+        #* original size is 640 x 480
+        frame = cv2.resize(frame, (600,450))
+            
+        imgbytes = cv2.imencode(".png", frame)[1].tobytes()
 
         window["-IMAGE-"].update(data=imgbytes)
         
