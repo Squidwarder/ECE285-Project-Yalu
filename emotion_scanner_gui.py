@@ -29,7 +29,9 @@ local_img_column = [
     
     [psg.Text(size=(60, 1), key="-MODEL NAME-")],
 
-    [psg.Image(key="-LOCAL IMAGE-", size=(300,300))]    
+    [psg.Image(key="-LOCAL IMAGE-", size=(300,300))],
+    
+    [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
 ]
 
 def convert_to_bytes(file_or_bytes, resize=None):
@@ -56,7 +58,7 @@ def convert_to_bytes(file_or_bytes, resize=None):
     if resize:
         new_width, new_height = resize
         scale = min(new_height/cur_height, new_width/cur_width)
-        img = img.resize((int(cur_width*scale), int(cur_height*scale)), PIL.Image.ANTIALIAS)
+        img = img.resize((int(cur_width*scale), int(cur_height*scale)), PIL.Image.LANCZOS)
     bio = io.BytesIO()
     img.save(bio, format="PNG")
     del img
@@ -203,7 +205,8 @@ def main():
         elif event == "-FILE-":
             chosen_file = values["-FILE-"]
             
-            print(chosen_file)
+            print(f"chosen_file: {chosen_file}")
+            print(f"chosen_file type: {type(chosen_file)}")
             
             # find acceptable image files        
             
@@ -212,9 +215,23 @@ def main():
                 window["-MODEL NAME-"].update(chosen_file)
                 # window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (400,400))) #576,432
                 window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (576,432)))
+                window["-LOCAL PROCESS-"].update(disabled=False)
             except Exception as e:
                 psg.popup(e)
                 pass
+            
+        elif event == "-LOCAL PROCESS-":
+            
+            local_process_name = values["-FILE-"]                        
+            processed_results = model(local_process_name)
+                        
+            for r in processed_results:
+                im_array = r.plot()
+                message = r.verbose()                     
+                cv2.imshow("The boxed result", im_array)
+                psg.popup(message)
+                # print(r)                     
+                cv2.waitKey(0)
 
     window.close()
 
