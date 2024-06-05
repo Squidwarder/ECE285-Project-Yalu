@@ -207,7 +207,7 @@ def main():
         #* original size is 640 x 480
         frame = cv2.resize(frame, (600,450))
         
-        tracks = model.track(frame, persist=True, show=False)
+        tracks = model.track(frame, agnostic_nms=True, persist=True, show=False)
         tracked_im = tracks[0].plot()
         # frame = counter.start_counting(frame, tracks)
         
