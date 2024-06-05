@@ -133,31 +133,24 @@ def capture_window(frame):
     capture_window.close()
 
 
-def scan_window():
-
-    # Define the window layout
+def scan_window(cap):
+    #! cap is videoCapture passed on from main()
 
     layout = [
-        psg.Column([
-                [psg.Text("Cam footage", size=(60, 1), justification="center")],
+        
+        [psg.Text("Cam footage", size=(60, 1), justification="center")],
 
-                [psg.Image(filename="", key="-SCAN IMAGE-", size=(300,300))],
+        [psg.Image(filename="", key="-SCAN IMAGE-", size=(300,300))],
 
-                [psg.Button("Capture", size=(10, 2))],
+        [psg.Button("Capture", size=(10, 2))],
 
-                [psg.Button("Back to Main Page", size=(10, 2))],
-        ])
+        [psg.Button("Back to Main Page", size=(10, 2))]
+        
     ]
     
     # Create the window and show it without the plot
+    scan_window = psg.Window("Scanning Inventory", layout) #, location=(800, 200)
 
-    window = psg.Window("Inventory Footage", layout) #, location=(800, 200)
-
-    #! 0 is internal webcam, 1 works for usb cam
-    #! usb cam is 1280x720 (16:9), webcam is 4:3.
-    # usb cam takes longer than internal cam
-    cap = cv2.VideoCapture(CAM_DEVICE)
-    
     w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
     # Define line points (w, h)
@@ -175,10 +168,9 @@ def scan_window():
     
     while True:
 
-        event, values = window.read(timeout=20)
+        event, values = scan_window.read(timeout=20)
 
         if event == "Back to Main Page" or event == psg.WIN_CLOSED:
-
             break
 
         ret, frame_raw = cap.read()
@@ -203,14 +195,14 @@ def scan_window():
         imgbytes = cv2.imencode(".png", tracked_im)[1].tobytes()
         # imgbytes = cv2.imencode(".png", frame)[1].tobytes()
 
-        window["-SCAN IMAGE-"].update(data=imgbytes)
+        scan_window["-SCAN IMAGE-"].update(data=imgbytes)
         
         if event == "Capture":
                                 
             capture_window(frame)
             
 
-    window.close()
+    scan_window.close()
 
 
 def main():
@@ -228,7 +220,7 @@ def main():
 
                 [psg.Image(filename="", key="-IMAGE-", size=(300,300))],
 
-                [psg.Button("Capture", size=(10, 2))],
+                [psg.Button("Scan", size=(10, 2))],
 
                 [psg.Button("Exit", size=(10, 2))],
             ]),
@@ -242,7 +234,7 @@ def main():
     
     # Create the window and show it without the plot
 
-    window = psg.Window("Inventory Footage", layout) #, location=(800, 200)
+    window = psg.Window("Inventory Scanner", layout) #, location=(800, 200)
 
     #! 0 is internal webcam, 1 works for usb cam
     #! usb cam is 1280x720 (16:9), webcam is 4:3.
@@ -276,9 +268,8 @@ def main():
 
         window["-IMAGE-"].update(data=imgbytes)
         
-        if event == "Capture":
-                                
-            capture_window(frame)
+        if event == "Scan":
+            scan_window(cap)
             
         elif event == "-FILE-":
             chosen_file = values["-FILE-"]
