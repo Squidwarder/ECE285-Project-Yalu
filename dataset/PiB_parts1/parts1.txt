@@ -1,6 +1,6 @@
 jumper_wire_m2m
-jumper_wire_mf2
-usb_wire
+jumper_wire_m2f
+usb_cable
 arduino_box
 oled_display
 led_red
