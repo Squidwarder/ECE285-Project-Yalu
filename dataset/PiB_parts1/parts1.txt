@@ -1,3 +1,9 @@
-jumper_wire
-arduino_box
+jumper_wire_m2m
+jumper_wire_mf2
 usb_wire
+arduino_box
+oled_display
+led_red
+resistor
+capacitor
+button
