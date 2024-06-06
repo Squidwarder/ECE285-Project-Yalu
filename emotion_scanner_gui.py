@@ -12,7 +12,7 @@ import io
 
 #! Default model
 # model = YOLO("C:/Users/yaluo/Desktop/Emotion Scanner/train40_gpu.pt")
-model = YOLO("train6_best.pt")
+model = YOLO("model1_train6_best.pt")
 
 path = 'C:/Users/yaluo/Desktop/Emotion Scanner/saved_img'
 
