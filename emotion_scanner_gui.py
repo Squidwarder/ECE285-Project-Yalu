@@ -224,7 +224,7 @@ def main():
                     psg.In(size=(25, 2), enable_events=True, key="-NN NAME-"),
                     psg.FileBrowse(),
                 ],
-                [psg.Multiline("Labels for Model:", size=(50, 10))],
+                [psg.Multiline("Labels for Model:", size=(50, 10), key="-NN LABELS-")],
 
                 [psg.Button("Scan", size=(10, 2))],
                 [psg.Button("Exit", size=(10, 2))],
@@ -300,15 +300,23 @@ def main():
             
             print(f"chosen_model: {chosen_model}")
             print(f"chosen_model type: {type(chosen_model)}")
+            
+            try:                    
+                with open(chosen_model, 'r') as f2:
+                    window["-NN LABELS-"].update(f2.read())
+            except Exception as e:
+                psg.popup(e)
+                pass
         
         elif event == "-LOCAL PROCESS-":
             
-            local_process_name = values["-FILE-"]                        
+            local_process_name = values["-FILE-"]
             processed_results = model(local_process_name)
                         
             for r in processed_results:
                 im_array = r.plot()
-                message = r.verbose()                     
+                message = r.verbose()
+                im_array = cv2.resize(im_array, resize_dct[CAM_DEVICE])
                 cv2.imshow("The boxed result", im_array)
                 psg.popup(message)
                 # print(r)                     
