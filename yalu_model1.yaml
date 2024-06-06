@@ -5,7 +5,12 @@ test:  # test images (optional)
 
 # Classes (4 classes for model 1)
 names:
-  0: jumper_wire
-  1: arduino_box
-  2: usb_wire
-  3: 
+  0: jumper_wire_m2m
+  1: jumper_wire_m2f
+  2: usb_cable
+  3: arduino_box
+  4: oled_display
+  5: led_red
+  6: resistor
+  7: capacitor
+  8: button

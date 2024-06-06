@@ -18,10 +18,10 @@ path = 'C:/Users/yaluo/Desktop/Emotion Scanner/saved_img'
 CAM_DEVICE = 0
 
 local_img_column = [
-    [psg.Text("File selection", size=(60, 1), justification="center")],
+    [psg.Text("NN model selection", size=(60, 1), justification="center")],
     
     [
-        psg.Text("Image File"),
+        psg.Text("NN File"),
         psg.In(size=(25, 2), enable_events=True, key="-FILE-"),
         psg.FileBrowse(),
     ],    
@@ -30,7 +30,7 @@ local_img_column = [
 
     [psg.Image(key="-LOCAL IMAGE-", size=(300,300))],
     
-    [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
+    # [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
 ]
 
 def convert_to_bytes(file_or_bytes, resize=None):
@@ -284,7 +284,7 @@ def main():
                 window["-MODEL NAME-"].update(chosen_file)
                 # window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (400,400))) #576,432
                 window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (576,432)))
-                window["-LOCAL PROCESS-"].update(disabled=False)
+                # window["-LOCAL PROCESS-"].update(disabled=False)
             except Exception as e:
                 psg.popup(e)
                 pass
