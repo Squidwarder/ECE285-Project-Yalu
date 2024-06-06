@@ -18,19 +18,19 @@ path = 'C:/Users/yaluo/Desktop/Emotion Scanner/saved_img'
 CAM_DEVICE = 0
 
 local_img_column = [
-    [psg.Text("NN model selection", size=(60, 1), justification="center")],
+    [psg.Text("Image selection", size=(60, 1), justification="center")],
     
     [
-        psg.Text("NN File"),
+        psg.Text("Image File"),
         psg.In(size=(25, 2), enable_events=True, key="-FILE-"),
         psg.FileBrowse(),
     ],    
     
-    [psg.Text(size=(60, 1), key="-MODEL NAME-")],
+    [psg.Text(size=(60, 1), key="-LOC IMG NAME-")],
 
     [psg.Image(key="-LOCAL IMAGE-", size=(300,300))],
     
-    # [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
+    [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
 ]
 
 def convert_to_bytes(file_or_bytes, resize=None):
@@ -217,11 +217,16 @@ def main():
 
             psg.Column([
                 [psg.Text("Cam footage", size=(60, 1), justification="center")],
-
-                [psg.Image(filename="", key="-IMAGE-", size=(300,300))],
+                [psg.Image(filename="", key="-IMAGE-", size=(200,200))],
+                
+                [
+                    psg.Text("Choose Model"),
+                    psg.In(size=(25, 2), enable_events=True, key="-NN NAME-"),
+                    psg.FileBrowse(),
+                ],
+                [psg.Multiline("Labels for Model:", size=(50, 10))],
 
                 [psg.Button("Scan", size=(10, 2))],
-
                 [psg.Button("Exit", size=(10, 2))],
             ]),
         
@@ -239,7 +244,8 @@ def main():
     #! 0 is internal webcam, 1 works for usb cam
     #! usb cam is 1280x720 (16:9), webcam is 4:3.
     # usb cam takes longer than internal cam
-    cap = cv2.VideoCapture(0)
+    resize_dct = {0:(400, 300), 1:(400, 25)}
+    cap = cv2.VideoCapture(CAM_DEVICE)
     
     while True:
 
@@ -262,7 +268,7 @@ def main():
 
         #* Resizing the camera feed to make it look better on the layout
         #* original size is 640 x 480
-        frame = cv2.resize(frame, (600,450))
+        frame = cv2.resize(frame, resize_dct[CAM_DEVICE])
             
         imgbytes = cv2.imencode(".png", frame)[1].tobytes()
 
@@ -281,14 +287,20 @@ def main():
             
             try:                    
             
-                window["-MODEL NAME-"].update(chosen_file)
+                window["-LOC IMG NAME-"].update(chosen_file)
                 # window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (400,400))) #576,432
                 window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (576,432)))
-                # window["-LOCAL PROCESS-"].update(disabled=False)
+                window["-LOCAL PROCESS-"].update(disabled=False)
             except Exception as e:
                 psg.popup(e)
                 pass
             
+        elif event == "-NN NAME-":
+            chosen_model = values["-NN NAME-"]
+            
+            print(f"chosen_model: {chosen_model}")
+            print(f"chosen_model type: {type(chosen_model)}")
+        
         elif event == "-LOCAL PROCESS-":
             
             local_process_name = values["-FILE-"]                        
