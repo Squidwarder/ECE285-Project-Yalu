@@ -12,9 +12,9 @@ import io
 
 #! Default model
 # model = YOLO("C:/Users/yaluo/Desktop/Emotion Scanner/train40_gpu.pt")
-model = YOLO("model1_train6_best.pt")
+model = YOLO("models/model1/best_models_labels/model1_train6_best.pt")
 
-path = 'C:/Users/yaluo/Desktop/Emotion Scanner/saved_img'
+path = 'C:/Users/yaluo/UCSD_Course/ECE285/Project/saved_img'
 
 CAM_DEVICE = 0
 
@@ -221,11 +221,12 @@ def main():
                 [psg.Image(filename="", key="-IMAGE-", size=(200,200))],
                 
                 [
-                    psg.Text("Choose Model"),
+                    psg.Text("Choose Model (.pt)"),
                     psg.In(size=(25, 2), enable_events=True, key="-NN NAME-"),
                     psg.FileBrowse(),
                 ],
-                [psg.Multiline("Labels for Model:", size=(50, 10), key="-NN LABELS-")],
+                [psg.Multiline("""Model file can be found under /models/model#/best_models_labels/model#.pt. Corresponding labels will be displayed here""",
+                    size=(50, 10), key="-NN LABELS-")],
 
                 [psg.Button("Scan", size=(10, 2))],
                 [psg.Button("Exit", size=(10, 2))],
@@ -299,11 +300,18 @@ def main():
         elif event == "-NN NAME-":
             chosen_model = values["-NN NAME-"]
             
-            print(f"chosen_model: {chosen_model}")
-            print(f"chosen_model type: {type(chosen_model)}")
+            model_dir = os.path.dirname(chosen_model)
+            label_files = [f for f in os.listdir(model_dir) if f.endswith('label.txt')]
+            label_file = os.path.join(model_dir, label_files[0])
+            model = YOLO(chosen_model)
+            
+            # print(f"chosen_model: {chosen_model}")
+            # print(f"chosen_model dir: {model_dir}")
+            # print(f"label files[0]: {label_files[0]}")
+            # print(f"label file: {label_file}")
             
             try:                    
-                with open(chosen_model, 'r') as f2:
+                with open(label_file, 'r') as f2:
                     window["-NN LABELS-"].update(f2.read())
             except Exception as e:
                 psg.popup(e)
