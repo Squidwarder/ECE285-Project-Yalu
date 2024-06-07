@@ -23,7 +23,7 @@ def capture_window(frame):
     Has the ability to save those snapshots as actual image files for processing.
     """
     capture_layout = [
-        # [psg.Text("Captured Snapshot", size=(60, 1), justification="center")],
+        [psg.Text("Captured Snapshot", size=(30, 1), justification="center", font=("Arial", 16, "bold"))],
         
         [psg.Image(filename="", key="-Snapshot-", size=(300,300))],
         
@@ -74,7 +74,8 @@ def capture_window(frame):
             
             for r in processed_results:
                 im_array = r.plot()
-                message = r.verbose()                     
+                message = r.verbose()
+                message = message.replace(",", "\n")
                 cv2.imshow("NN results on Snapshot", im_array)
                 psg.popup(message)
                 # print(r)                     
