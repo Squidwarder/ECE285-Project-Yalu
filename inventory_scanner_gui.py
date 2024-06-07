@@ -5,9 +5,6 @@ import PySimpleGUI as psg   # reminds me of the football club
 import cv2
 import numpy as np
 import os
-import PIL
-import base64
-import io
 
 #! Default model
 model = YOLO("models/model1/best_models_labels/model1_train6_best.pt")
@@ -178,12 +175,9 @@ def main():
 
     psg.theme("DarkBlue")
 
-
     # Define the window layout
-
     layout = [
         [
-
             psg.Column([
                 [psg.Text("Cam footage", size=(60, 1), justification="center")],
                 [psg.Image(filename="", key="-IMAGE-", size=(200,200))],
@@ -198,17 +192,14 @@ def main():
 
                 [psg.Button("Scan", size=(10, 2))],
                 [psg.Button("Exit", size=(10, 2))],
-            ]),
-        
+            ]),        
             psg.VSeparator(),
-
             psg.Column(local_img_column)
         ]            
 
     ]
     
     # Create the window and show it without the plot
-
     window = psg.Window("Inventory Scanner", layout) #, location=(800, 200)
 
     #! 0 is internal webcam, 1 works for usb cam
