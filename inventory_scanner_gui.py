@@ -10,11 +10,11 @@ import os
 model = YOLO("models/model1/best_models_labels/model1_train6_best.pt")
 path = 'C:/Users/yaluo/UCSD_Course/ECE285/Project/saved_img'
 
-CAM_DEVICE = 0
-#! 0 is internal webcam, 1 works for usb cam
+CAM_DEVICE = "usb_cam"
 #! usb cam is 1280x720 (16:9), webcam is 4:3.
+#! dimensions in (w, h)
 # usb cam takes longer than internal cam
-resize_dct = {0:(400, 300), 1:(400, 25)}
+resize_dct = {"webcam":(400, 300), "usb_cam":(400, 225)}
 
 def capture_window(frame):
     """This window is dedicated to capturing snapshots from camera devices.
@@ -130,8 +130,10 @@ def scan_window(cap):
 
         #! flips the frame so that it matches movement in front of webcam
         # not needed if using external camera
-        frame = cv2.flip(frame_raw, 1)
-        # frame = frame_raw
+        if CAM_DEVICE == "webcam":
+            frame = cv2.flip(frame_raw, 1)
+        else:
+            frame = frame_raw
 
         #* Resizing the camera feed to make it look better on the layout
         #* original size is 640 x 480
@@ -200,7 +202,9 @@ def main():
     # Create the window and show it without the plot
     window = psg.Window("Inventory Scanner", layout) #, location=(800, 200)
 
-    cap = cv2.VideoCapture(CAM_DEVICE)
+    #! whenever the usb camera is plugged in, it always to device 0.
+    #! webcam also takes device 0 when by itself.
+    cap = cv2.VideoCapture(0)
     
     while True:
 
@@ -218,8 +222,10 @@ def main():
 
         #! flips the frame so that it matches movement in front of webcam
         # not needed if using external camera
-        frame = cv2.flip(frame_raw, 1)
-        # frame = frame_raw
+        if CAM_DEVICE == "webcam":
+            frame = cv2.flip(frame_raw, 1)
+        else:
+            frame = frame_raw
 
         #* Resizing the camera feed to make it look better on the layout
         #* original size is 640 x 480
@@ -240,7 +246,8 @@ def main():
             
             # find acceptable image files
             chosen_file_img = cv2.imread(chosen_file)
-            chosen_file_img = cv2.resize(chosen_file_img, resize_dct[CAM_DEVICE])
+            # always display local image in 4:3 aspect ratio
+            chosen_file_img = cv2.resize(chosen_file_img, resize_dct[0])
             chosen_file_img = cv2.imencode(".png", chosen_file_img)[1].tobytes()
             
             try:                    
