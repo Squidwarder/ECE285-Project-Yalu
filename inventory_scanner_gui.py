@@ -101,21 +101,6 @@ def scan_window(cap):
     
     # Create the window and show it without the plot
     scan_window = psg.Window("Scanning Inventory", layout) #, location=(800, 200)
-
-    w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
-
-    # Define line points (w, h)
-    line_points = [(0, 0), (w, h)]
-
-    # Init Object Counter
-    counter = solutions.ObjectCounter(
-        view_img=True,
-        reg_pts=line_points,
-        classes_names=model.names,
-        draw_tracks=True,
-        line_thickness=2,
-    )
-
     
     while True:
 
@@ -144,13 +129,12 @@ def scan_window(cap):
         tracks = model.track(frame, agnostic_nms=True, persist=True, show=False)
         tracked_im = tracks[0].plot()
         message = tracks[0].verbose()
-        # frame = counter.start_counting(frame, tracks)
         
         imgbytes = cv2.imencode(".png", tracked_im)[1].tobytes()
-        # imgbytes = cv2.imencode(".png", frame)[1].tobytes()
 
         scan_window["-SCAN IMAGE-"].update(data=imgbytes)
-        scan_window["-SCAN MSG-"].update(message)
+        message = message.replace(",", "\n")
+        scan_window["-SCAN MSG-"].update(value=message, text_color="#99ffee")
         
         if event == "Capture":
                                 
