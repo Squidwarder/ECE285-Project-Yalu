@@ -40,3 +40,30 @@ cv2
 numpy
 os
 ```
+
+## Citations:
+
+The original YOLO paper from 2015 (revised in 2016):
+
+```
+@misc{redmon2016look,
+      title={You Only Look Once: Unified, Real-Time Object Detection}, 
+      author={Joseph Redmon and Santosh Divvala and Ross Girshick and Ali Farhadi},
+      year={2016},
+      eprint={1506.02640},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
+
+
+The YOLOv10 codebase is built with ultralytics and RT-DETR.
+
+```
+@article{wang2024yolov10,
+  title={YOLOv10: Real-Time End-to-End Object Detection},
+  author={Wang, Ao and Chen, Hui and Liu, Lihao and Chen, Kai and Lin, Zijia and Han, Jungong and Ding, Guiguang},
+  journal={arXiv preprint arXiv:2405.14458},
+  year={2024}
+}
+```
