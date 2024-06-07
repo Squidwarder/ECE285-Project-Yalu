@@ -5,6 +5,11 @@
 
 ## Project Notes
 
+### Boxes overlap
+
+In some models I've trained I noticed that multiple boxes were drawn for a single instance of inventory object.
+To fix this issue, I used the `iou` argument during YOLO detection. `iou` stands for intersection over union.
+
 
 ### YOLO model notes
 
