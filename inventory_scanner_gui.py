@@ -11,37 +11,22 @@ model = YOLO("models/model1/best_models_labels/model1_train6_best.pt")
 path = 'C:/Users/yaluo/UCSD_Course/ECE285/Project/saved_img'
 
 CAM_DEVICE = 0
-
-local_img_column = [
-    [psg.Text("Image selection", size=(60, 1), justification="center")],
-    
-    [
-        psg.Text("Image File"),
-        psg.In(size=(25, 2), enable_events=True, key="-FILE-"),
-        psg.FileBrowse(),
-    ],    
-    
-    [psg.Text(size=(60, 1), key="-LOC IMG NAME-")],
-
-    [psg.Image(key="-LOCAL IMAGE-", size=(300,300))],
-    
-    [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
-]
+#! 0 is internal webcam, 1 works for usb cam
+#! usb cam is 1280x720 (16:9), webcam is 4:3.
+# usb cam takes longer than internal cam
+resize_dct = {0:(400, 300), 1:(400, 25)}
 
 def capture_window(frame):
     """This window is dedicated to capturing snapshots from camera devices.
     
     Has the ability to save those snapshots as actual image files for processing.
-
-    Args:
-        frame (_type_): _description_
     """
     capture_layout = [
         # [psg.Text("Captured Snapshot", size=(60, 1), justification="center")],
         
         [psg.Image(filename="", key="-Snapshot-", size=(300,300))],
         
-        [psg.InputText()],
+        [psg.InputText(default_text="Image name without extension")],
         
         [psg.Button("Save Image", size=(15, 2))],
         
@@ -75,23 +60,21 @@ def capture_window(frame):
             #! Tkinter and PySimpleGUI wants to work with .png and .gif by default
             #! Possible to accept more format but lots of more code
             
-            img_name = values[0] + ".png"
-            # cv2.imwrite("./saved_img/" + img_name + ".png", frame)
+            img_name = values[0] + ".png"            
             
             cv2.imwrite(os.path.join(path , img_name), frame)
-            print(os.path.join(path, img_name))
+            print(f"saved to : {os.path.join(path, img_name)}")
             psg.popup("Image saved")
             
                                 
         if event == "Process":
             
             processed_results = model(frame)
-            # processed_results = model("C:/Users/yaluo/Desktop/Emotion Scanner/saved_img/#face1.png")
             
             for r in processed_results:
                 im_array = r.plot()
                 message = r.verbose()                     
-                cv2.imshow("The boxed result", im_array)
+                cv2.imshow("NN results on Snapshot", im_array)
                 psg.popup(message)
                 # print(r)                     
                 cv2.waitKey(0)
@@ -152,7 +135,7 @@ def scan_window(cap):
 
         #* Resizing the camera feed to make it look better on the layout
         #* original size is 640 x 480
-        frame = cv2.resize(frame, (600,450))
+        frame = cv2.resize(frame, resize_dct[CAM_DEVICE])
         
         tracks = model.track(frame, agnostic_nms=True, persist=True, show=False)
         tracked_im = tracks[0].plot()
@@ -170,6 +153,21 @@ def scan_window(cap):
 
     scan_window.close()
 
+local_img_column = [
+    [psg.Text("Image selection", size=(60, 1), justification="center")],
+    
+    [
+        psg.Text("Image File"),
+        psg.In(size=(25, 2), enable_events=True, key="-FILE-"),
+        psg.FileBrowse(),
+    ],    
+    
+    [psg.Text(size=(60, 1), key="-LOC IMG NAME-")],
+
+    [psg.Image(key="-LOCAL IMAGE-", size=(300,300))],
+    
+    [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
+]
 
 def main():
 
@@ -202,10 +200,6 @@ def main():
     # Create the window and show it without the plot
     window = psg.Window("Inventory Scanner", layout) #, location=(800, 200)
 
-    #! 0 is internal webcam, 1 works for usb cam
-    #! usb cam is 1280x720 (16:9), webcam is 4:3.
-    # usb cam takes longer than internal cam
-    resize_dct = {0:(400, 300), 1:(400, 25)}
     cap = cv2.VideoCapture(CAM_DEVICE)
     
     while True:
