@@ -88,11 +88,11 @@ def scan_window(cap):
 
     layout = [
         
-        [psg.Text("Cam footage", size=(60, 1), justification="center")],
+        [psg.Text("Cam footage", size=(30, 1), justification="center", font=("Arial", 16, "bold"))],
 
         [psg.Image(filename="", key="-SCAN IMAGE-", size=(300,300))],
         
-        [psg.Multiline(size=(50, 15), key="-SCAN MSG-")],
+        [psg.Multiline(size=(30, 12), key="-SCAN MSG-")],
 
         [psg.Button("Capture", size=(10, 2))],
 
@@ -135,7 +135,7 @@ def scan_window(cap):
 
         scan_window["-SCAN IMAGE-"].update(data=imgbytes)
         message = message.replace(",", "\n")
-        scan_window["-SCAN MSG-"].update(value=message, text_color="#99ffee")
+        scan_window["-SCAN MSG-"].update(value=message, text_color="#99ffee", font=("Arial", 16, "bold"))
         
         if event == "Capture":
                                 
@@ -145,7 +145,7 @@ def scan_window(cap):
     scan_window.close()
 
 local_img_column = [
-    [psg.Text("Image selection", size=(60, 1), justification="center")],
+    [psg.Text("Image selection", size=(30, 1), justification="center", font=("Arial", 16, "bold"))],
     
     [
         psg.Text("Image File"),
@@ -169,7 +169,7 @@ def main():
     layout = [
         [
             psg.Column([
-                [psg.Text("Cam footage", size=(60, 1), justification="center")],
+                [psg.Text("Cam footage", size=(30, 1), justification="center", font=("Arial", 16, "bold"))],
                 [psg.Image(filename="", key="-START CAM-", size=(200,200))],
                 
                 [
