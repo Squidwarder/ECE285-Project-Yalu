@@ -103,7 +103,7 @@ def scan_window(cap):
     w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
     # Define line points (w, h)
-    line_points = [(20, 400), (500, 400)]
+    line_points = [(0, 0), (w, h)]
 
     # Init Object Counter
     counter = solutions.ObjectCounter(
@@ -141,6 +141,7 @@ def scan_window(cap):
         
         tracks = model.track(frame, agnostic_nms=True, persist=True, show=False)
         tracked_im = tracks[0].plot()
+        message = tracks[0].verbose()
         # frame = counter.start_counting(frame, tracks)
         
         imgbytes = cv2.imencode(".png", tracked_im)[1].tobytes()
@@ -241,13 +242,13 @@ def main():
         elif event == "-FILE-":
             chosen_file = values["-FILE-"]
             
-            print(f"chosen_file: {chosen_file}")
-            print(f"chosen_file type: {type(chosen_file)}")
+            # print(f"chosen_file: {chosen_file}")
+            # print(f"chosen_file type: {type(chosen_file)}")
             
             # find acceptable image files
             chosen_file_img = cv2.imread(chosen_file)
             # always display local image in 4:3 aspect ratio
-            chosen_file_img = cv2.resize(chosen_file_img, resize_dct[0])
+            chosen_file_img = cv2.resize(chosen_file_img, resize_dct["webcam"])
             chosen_file_img = cv2.imencode(".png", chosen_file_img)[1].tobytes()
             
             try:                    
@@ -283,8 +284,9 @@ def main():
         elif event == "-LOCAL PROCESS-":
             
             local_process_name = values["-FILE-"]
-            processed_results = model(local_process_name)
-                        
+            processed_results = model(local_process_name)            
+            # print(f"processed_results: {processed_results}")
+            
             for r in processed_results:
                 im_array = r.plot()
                 message = r.verbose()
