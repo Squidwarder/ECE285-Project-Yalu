@@ -5,6 +5,15 @@
 
 ## Project Notes
 
+
+### YOLO model notes
+
+Some metrics about YOLO models I used in my project. The number of paramters are measured by the info from training.
+
+| | YOLOv8n | YOLOv8s | YOLOv8m|
+|-|---|----|---|
+|params (M) | 3.2 | 11.4 | 25.9 |
+
 ### Inference speed
 
 The inference speed of YOLO models change pretty drastically. 
