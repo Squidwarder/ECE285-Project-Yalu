@@ -8,6 +8,7 @@ import os
 
 #! Default model
 model = YOLO("models/model1/best_models_labels/model1_train6_best.pt")
+model_path = 'C:/Users/yaluo/UCSD_Course/ECE285/Project/models'
 path = 'C:/Users/yaluo/UCSD_Course/ECE285/Project/saved_img'
 
 CAM_DEVICE = "usb_cam"
@@ -149,7 +150,8 @@ local_img_column = [
     [
         psg.Text("Image File"),
         psg.In(size=(25, 2), enable_events=True, key="-FILE-"),
-        psg.FileBrowse(),
+        psg.FileBrowse(file_types=(("PNG", ".png"), ("JPG1", ".JPG"), ("jpg2", ".jpg"), ("JPEG", ".jpeg")),
+                       initial_folder=path),
     ],    
     
     [psg.Text(size=(60, 1), key="-LOC IMG NAME-")],
@@ -168,12 +170,12 @@ def main():
         [
             psg.Column([
                 [psg.Text("Cam footage", size=(60, 1), justification="center")],
-                [psg.Image(filename="", key="-IMAGE-", size=(200,200))],
+                [psg.Image(filename="", key="-START CAM-", size=(200,200))],
                 
                 [
                     psg.Text("Choose Model (.pt)"),
                     psg.In(size=(25, 2), enable_events=True, key="-NN NAME-"),
-                    psg.FileBrowse(),
+                    psg.FileBrowse(file_types=(("PT files", ".pt"),), initial_folder=model_path+"/model1/best_models_labels"),
                 ],
                 [psg.Multiline("""Model file can be found under /models/model#/best_models_labels/model#.pt. Corresponding labels will be displayed here""",
                     size=(50, 10), key="-NN LABELS-")],
@@ -221,7 +223,7 @@ def main():
             
         imgbytes = cv2.imencode(".png", frame)[1].tobytes()
 
-        window["-IMAGE-"].update(data=imgbytes)
+        window["-START CAM-"].update(data=imgbytes)
         
         if event == "Scan":
             scan_window(cap)
@@ -277,8 +279,9 @@ def main():
             for r in processed_results:
                 im_array = r.plot()
                 message = r.verbose()
+                message = message.replace(",", "\n")
                 im_array = cv2.resize(im_array, resize_dct[CAM_DEVICE])
-                cv2.imshow("NN Detection results", im_array)
+                cv2.imshow("NN Detection results", im_array)                
                 psg.popup(message)
                 # print(r)                     
                 cv2.waitKey(0)
