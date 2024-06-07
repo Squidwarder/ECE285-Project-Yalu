@@ -1,0 +1,16 @@
+path: PiB_parts1  # dataset root dir
+train: images/train  # train images (relative to 'path') 4 images
+val: images/val  # val images (relative to 'path') 4 images
+test: images/test # test images (optional)
+
+# Classes (4 classes for model 1)
+names:
+  0: jumper_wire_m2m
+  1: jumper_wire_m2f
+  2: usb_cable
+  3: arduino_box
+  4: oled_display
+  5: led_red
+  6: resistor
+  7: capacitor
+  8: button

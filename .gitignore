@@ -2,3 +2,5 @@ codepath*
 dataset/*.zip
 models/model1/train*/*.png
 models/model1/train*/*.jpg
+models/model1/yolo*/*.png
+models/model1/yolo*/*.jpg
