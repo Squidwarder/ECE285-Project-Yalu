@@ -1,8 +1,7 @@
 #? Documentation for PySimpleGUI: https://www.pysimplegui.org/en/latest/cookbook/#recipe-theme-browser
 
 from ultralytics import YOLO, solutions
-# reminds me of the football club
-import PySimpleGUI as psg
+import PySimpleGUI as psg   # reminds me of the football club
 import cv2
 import numpy as np
 import os
@@ -11,9 +10,7 @@ import base64
 import io
 
 #! Default model
-# model = YOLO("C:/Users/yaluo/Desktop/Emotion Scanner/train40_gpu.pt")
 model = YOLO("models/model1/best_models_labels/model1_train6_best.pt")
-
 path = 'C:/Users/yaluo/UCSD_Course/ECE285/Project/saved_img'
 
 CAM_DEVICE = 0
@@ -33,37 +30,6 @@ local_img_column = [
     
     [psg.Button("Image file process", key="-LOCAL PROCESS-", disabled=True, size=(15, 2))]
 ]
-
-def convert_to_bytes(file_or_bytes, resize=None):
-    '''
-    Will convert into bytes and optionally resize an image that is a file or a base64 bytes object.
-    Turns into  PNG format in the process so that can be displayed by tkinter
-    :param file_or_bytes: either a string filename or a bytes base64 image object
-    :type file_or_bytes:  (Union[str, bytes])
-    :param resize:  optional new size
-    :type resize: (Tuple[int, int] or None)
-    :return: (bytes) a byte-string object
-    :rtype: (bytes)
-    '''
-    if isinstance(file_or_bytes, str):
-        img = PIL.Image.open(file_or_bytes)
-    else:
-        try:
-            img = PIL.Image.open(io.BytesIO(base64.b64decode(file_or_bytes)))
-        except Exception as e:
-            dataBytesIO = io.BytesIO(file_or_bytes)
-            img = PIL.Image.open(dataBytesIO)
-
-    cur_width, cur_height = img.size
-    if resize:
-        new_width, new_height = resize
-        scale = min(new_height/cur_height, new_width/cur_width)
-        img = img.resize((int(cur_width*scale), int(cur_height*scale)), PIL.Image.LANCZOS)
-    bio = io.BytesIO()
-    img.save(bio, format="PNG")
-    del img
-    return bio.getvalue()
-
 
 def capture_window(frame):
     """This window is dedicated to capturing snapshots from camera devices.
@@ -89,6 +55,8 @@ def capture_window(frame):
     
     capture_window = psg.Window("Snapshot", capture_layout, modal=True) #location=(600, 100), 
     
+    #! PySimpleGUI only displays images in PNG, GIF, PPM/PGM formats, so NEED to
+    #! convert frames taken using cv2.VideoCapture() into supported encodings.
     imgbytes = cv2.imencode(".png", frame)[1].tobytes()
     
     while True:
@@ -285,13 +253,15 @@ def main():
             print(f"chosen_file: {chosen_file}")
             print(f"chosen_file type: {type(chosen_file)}")
             
-            # find acceptable image files        
+            # find acceptable image files
+            chosen_file_img = cv2.imread(chosen_file)
+            chosen_file_img = cv2.resize(chosen_file_img, resize_dct[CAM_DEVICE])
+            chosen_file_img = cv2.imencode(".png", chosen_file_img)[1].tobytes()
             
             try:                    
             
                 window["-LOC IMG NAME-"].update(chosen_file)
-                # window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (400,400))) #576,432
-                window["-LOCAL IMAGE-"].update(data=convert_to_bytes(chosen_file, (576,432)))
+                window["-LOCAL IMAGE-"].update(data=chosen_file_img)
                 window["-LOCAL PROCESS-"].update(disabled=False)
             except Exception as e:
                 psg.popup(e)
@@ -303,6 +273,7 @@ def main():
             model_dir = os.path.dirname(chosen_model)
             label_files = [f for f in os.listdir(model_dir) if f.endswith('label.txt')]
             label_file = os.path.join(model_dir, label_files[0])
+            global model    #! Updating global variable model
             model = YOLO(chosen_model)
             
             # print(f"chosen_model: {chosen_model}")
@@ -326,7 +297,7 @@ def main():
                 im_array = r.plot()
                 message = r.verbose()
                 im_array = cv2.resize(im_array, resize_dct[CAM_DEVICE])
-                cv2.imshow("The boxed result", im_array)
+                cv2.imshow("NN Detection results", im_array)
                 psg.popup(message)
                 # print(r)                     
                 cv2.waitKey(0)
