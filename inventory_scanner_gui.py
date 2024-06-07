@@ -90,6 +90,8 @@ def scan_window(cap):
         [psg.Text("Cam footage", size=(60, 1), justification="center")],
 
         [psg.Image(filename="", key="-SCAN IMAGE-", size=(300,300))],
+        
+        [psg.Multiline(size=(50, 15), key="-SCAN MSG-")],
 
         [psg.Button("Capture", size=(10, 2))],
 
@@ -148,6 +150,7 @@ def scan_window(cap):
         # imgbytes = cv2.imencode(".png", frame)[1].tobytes()
 
         scan_window["-SCAN IMAGE-"].update(data=imgbytes)
+        scan_window["-SCAN MSG-"].update(message)
         
         if event == "Capture":
                                 
