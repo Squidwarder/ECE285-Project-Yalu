@@ -1,5 +1,3 @@
-#? Documentation for PySimpleGUI: https://www.pysimplegui.org/en/latest/cookbook/#recipe-theme-browser
-
 from ultralytics import YOLO, solutions
 import PySimpleGUI as psg   # reminds me of the football club
 import cv2
@@ -70,7 +68,7 @@ def capture_window(frame):
                                 
         if event == "Process":
             
-            processed_results = model(frame)
+            processed_results = model.predict(source=frame, iou=0.8)
             
             for r in processed_results:
                 im_array = r.plot()
@@ -128,7 +126,7 @@ def scan_window(cap):
         #* original size is 640 x 480
         frame = cv2.resize(frame, resize_dct[CAM_DEVICE])
         
-        tracks = model.track(frame, agnostic_nms=True, persist=True, show=False)
+        tracks = model.track(frame, agnostic_nms=True, persist=True, show=False, iou=0.8)
         tracked_im = tracks[0].plot()
         message = tracks[0].verbose()
         
@@ -274,7 +272,7 @@ def main():
         elif event == "-LOCAL PROCESS-":
             
             local_process_name = values["-FILE-"]
-            processed_results = model(local_process_name)            
+            processed_results = model.predict(source=local_process_name, iou=0.8)
             # print(f"processed_results: {processed_results}")
             
             for r in processed_results:
