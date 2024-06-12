@@ -2,6 +2,10 @@
 
 > A ECE 285 Project by Yalu Ouyang
 
+## Gradescope submission notes
+
+I didn't include the entire dataset in my submission because Gradescope wouldn't allow files greater than 100 MB to be uploaded. Thus, I only uploaded some sample images and label files to represent what my dataset looks like.
+
 ## Usage
 
 The bare minimum program only needs `inventory_scanner_gui.py` as well as a trained `pt` file to function. Everything else can be disregarded if you only wish to use the program. Please preserve the file structure for folders in this project, and also change the **path variables** in `inventory_scanner_gui.py` to the corresponding directories on your local machines.
