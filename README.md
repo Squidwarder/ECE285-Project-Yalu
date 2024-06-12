@@ -2,6 +2,10 @@
 
 > A ECE 285 Project by Yalu Ouyang
 
+## Usage
+
+The bare minimum program only needs `inventory_scanner_gui.py` as well as a trained `pt` file to function. Everything else can be disregarded if you only wish to use the program. Please preserve the file structure for folders in this project, and also change the **path variables** in `inventory_scanner_gui.py` to the corresponding directories on your local machines.
+
 
 ## Project Notes
 
@@ -15,9 +19,9 @@ To fix this issue, I used the `iou` argument during YOLO detection. `iou` stands
 
 Some metrics about YOLO models I used in my project. The number of paramters are measured by the info from training.
 
-| | YOLOv8n | YOLOv8s | YOLOv8m|
-|-|---|----|---|
-|params (M) | 3.2 | 11.4 | 25.9 |
+| | YOLOv8n | YOLOv8s | YOLOv8m|YOLOv10n|YOLOv10s|
+|-|---|----|---|---|---|
+|params (M) | 3.2 | 11.4 | 25.9 | 2.7 | 8.1 |
 
 ### Inference speed
 
