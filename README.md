@@ -12,7 +12,7 @@ The bare minimum program only needs `inventory_scanner_gui.py` as well as a trai
 ### Boxes overlap
 
 In some models I've trained I noticed that multiple boxes were drawn for a single instance of inventory object.
-To fix this issue, I used the `iou` argument during YOLO detection. `iou` stands for intersection over union.
+To fix this issue, I adjusted the `iou` argument during YOLO detection. `iou` stands for intersection over union, and higher values (0.0-1.0) reduce the number of boxes for each classification, which can reduce unnecessary boxes but can also remove correct boxes for items that are close together.
 
 
 ### YOLO model notes
